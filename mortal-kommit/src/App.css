@@ -5,8 +5,10 @@
 }
 
 .github-profile {
-  border: 2px solid blue;
+  border: 1px solid rgb(80, 80, 82);
+  box-shadow: inset 0 0 10px rgb(42, 45, 42);
   margin: 0;
+  
 }
 
 h1, p{
@@ -25,6 +27,8 @@ p {
 }
 
 .container {
+  background-image: url('/public/img/MK-background.png');
+  background-repeat: repeat;
   margin: 0;
   width: 100vw;
   height: 100vh;
@@ -37,12 +41,12 @@ p {
 .row-wrapper-1 {
   display: grid;
   grid-template: 75px / 60px 60px 60px 60px 60px;
-  border: 1px solid green;
+  /* border: 1px solid green; */
 }
 .row-wrapper-2 {
   display: grid;
   grid-template: 60px / 60px 60px 60px;
-  border: 2px solid green;
+  /* border: 2px solid green; */
 }
 
 .player-container{

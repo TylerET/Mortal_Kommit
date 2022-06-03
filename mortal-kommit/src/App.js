@@ -16,8 +16,8 @@ const testData = [
 
 const sliceDataRow1 = testData.slice(0,5);
 const sliceDataRow2 = testData.slice(5);
-console.table(sliceDataRow1);
-console.table(sliceDataRow2);
+// console.table(sliceDataRow1);
+// console.table(sliceDataRow2);
 
 
 
@@ -35,9 +35,47 @@ console.table(sliceDataRow2);
       //   console.log(resp.data[i].name);
       // }
 
-
-
       //check for author === username
+
+//If no profile picture = choose random MK
+
+      class Form extends React.Component {
+        state = { userName: ''};
+        handleSubmit = async (event) => {
+          event.preventDefault();
+          const resp = await axios.get(`https://api.github.com/users/${this.state.userName}/repos`);
+          // this.props.onSubmit(resp.data);
+          // this.setState({ userName: ''});
+          console.log(resp.data);
+          const repoNames = [];
+              for (let i = 0; i < resp.data.length; i++){
+              repoNames.push(resp.data[i].name);
+            }
+          console.table(repoNames);
+          var accum = 0;
+          for (var name in repoNames){
+            const resp2 = await axios.get(`https://api.github.com/repos/${this.state.userName}/${repoNames[name]}/commits`);
+            accum += resp2.data.length;
+            console.log(resp2.data);
+            console.log(accum);
+            // console.log(repoNames[name]);
+          }
+        };
+        render() {
+          return (
+            <form onSubmit={this.handleSubmit}>
+              <input 
+                type="text" 
+                value={this.state.userName}
+                onChange={event => this.setState({ userName: event.target.value })}
+                placeholder="GitHub username" 
+                required 
+              />
+              <button>Add card</button>
+            </form>
+          );
+        }
+      }
 
 const CardList = (props) => (
 
@@ -98,19 +136,6 @@ class Card extends React.Component {
   }
 }
 
-const Container = () => {
-  return(
-    <div  className='container'> 
-        <Title />
-        <CardList/>
-        <div className='player-container'>
-          <PlayerOne/>
-          <PlayerTwo/>
-        </div>
-        <Footer/>
-    </div>
-  )
-}
 
 const Title = () => {
   return (
@@ -127,15 +152,32 @@ const Title = () => {
       </footer>
     )
   }
+
+const Container = () => {
+  return(
+    <div  className='container'> 
+        <Title />
+        <Form />
+        <CardList/>
+        <div className='player-container'>
+          <PlayerOne/>
+          <PlayerTwo/>
+        </div>
+        <Footer/>
+    </div>
+  )
+}
       
 
 
 
-function App() {
-  const [counter, setCounter] = useState(0);
+class App extends React.Component {
+
+  render(){
   return (
     <Container/>
   );
+}
 }
 
 export default App;
