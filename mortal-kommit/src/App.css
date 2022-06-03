@@ -1,0 +1,57 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+.github-profile {
+  border: 2px solid blue;
+  margin: 0;
+}
+
+h1, p{
+  font-family: 'Press Start 2P', cursive;
+}
+
+h1 {
+  color: yellow;
+  text-shadow: 5px 5px #131111;
+}
+
+p {
+  font-weight: 900;
+  color: greenyellow;
+  text-shadow: 2px 2px #131111;
+}
+
+.container {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  border: 2px solid red;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.row-wrapper-1 {
+  display: grid;
+  grid-template: 75px / 60px 60px 60px 60px 60px;
+  border: 1px solid green;
+}
+.row-wrapper-2 {
+  display: grid;
+  grid-template: 60px / 60px 60px 60px;
+  border: 2px solid green;
+}
+
+.player-container{
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+
+
+/* .github-profile:nth-child(n+6):nth-child(-n+10){
+  margin: auto;
+ } */
