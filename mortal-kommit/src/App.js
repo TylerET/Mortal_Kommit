@@ -14,11 +14,18 @@ const testData = [
   {name: "Scorpion", avatar_url: "/img/Scorpion.png"},
 ];
 
-const sliceDataRow1 = testData.slice(0,5);
-const sliceDataRow2 = testData.slice(5);
+// const sliceDataRow1 = testData.slice(0,5);
+// const sliceDataRow2 = testData.slice(5);
 // console.table(sliceDataRow1);
 // console.table(sliceDataRow2);
 
+const sliceDataRow1 = (props) => {
+  return props.slice(0,5);
+}
+
+const sliceDataRow2 = (props) => {
+  return props.slice(5);
+}
 
 
 
@@ -43,23 +50,32 @@ const sliceDataRow2 = testData.slice(5);
         state = { userName: ''};
         handleSubmit = async (event) => {
           event.preventDefault();
-          const resp = await axios.get(`https://api.github.com/users/${this.state.userName}/repos`);
-          // this.props.onSubmit(resp.data);
-          // this.setState({ userName: ''});
-          console.log(resp.data);
-          const repoNames = [];
-              for (let i = 0; i < resp.data.length; i++){
-              repoNames.push(resp.data[i].name);
-            }
-          console.table(repoNames);
+          //overrides native refresh during a submit
+          // const resp = await axios.get(`https://api.github.com/users/${this.state.userName}/repos`);
+          const resp = await axios.get(`https://api.github.com/users/${this.state.userName}`);
+          this.props.onSubmit(resp.data);
+          
+          // console.log(resp.data);
+
+          // const repoNames = [];
+          //     for (let i = 0; i < resp.data.length; i++){
+          //       let repoName = resp.data[i].name;
+          //       if(repoName !== 'LandingPage'){
+          //     repoNames.push(repoName);}
+          //   }
+          // console.table(repoNames);
+
           var accum = 0;
-          for (var name in repoNames){
-            const resp2 = await axios.get(`https://api.github.com/repos/${this.state.userName}/${repoNames[name]}/commits`);
-            accum += resp2.data.length;
-            console.log(resp2.data);
-            console.log(accum);
-            // console.log(repoNames[name]);
-          }
+
+        //   for (var name in repoNames){
+        //     const resp2 = await axios.get(`https://api.github.com/repos/${this.state.userName}/${repoNames[name]}/commits`);
+        //     accum += resp2.data.length;
+
+        //     // console.log(resp2.data);
+        //     console.log(accum);
+        //     // console.log(repoNames[name]);
+        //   }
+        //   this.setState({ userName: ''});
         };
         render() {
           return (
@@ -78,43 +94,25 @@ const sliceDataRow2 = testData.slice(5);
       }
 
 const CardList = (props) => (
-
   <>
   <div className='row-wrapper-1'>
-    {sliceDataRow1.map(profile => <Card {...profile}/>)}
+    {sliceDataRow1(props.profiles).map(profile => <Card {...profile}/>)}
     </div>  
   <div className='row-wrapper-2'>
-    {sliceDataRow2.map(profile => <Card {...profile}/>)}
+    {sliceDataRow2(props.profiles).map(profile => <Card {...profile}/>)}
   </div>
   </>
-
-  // return (
-  // <>
-  // {/* <div className='row-wrapper-1'> */}
-  //   <Card name='1'/>
-  //   <Card name='2'/>
-  //   <Card className ='input' name='3'/>
-  //   <Card name='4'/>
-  //   <Card name='5'/>
-  // {/* </div> */}
-  // {/* <div className='row-wrapper-2'> */}
-  //   <Card name='6'/>
-  //   <Card name='7'/>
-  //   <Card name='8'/>
-  // {/* </div> */}
-  // </>
-  // )
 );
 
 const PlayerOne = (props) =>(
     <div>
-      <img src="/img/Johnny-Cage.png"></img>
+      <img src={props.profile}></img>
     </div>
 );
 
 const PlayerTwo = (props) =>(
   <div>
-    <img src="/img/Raiden.png"></img>
+    <img src={props.profile}></img>
   </div>
 );
 
@@ -140,7 +138,8 @@ class Card extends React.Component {
 const Title = () => {
   return (
     <header>
-      <h1>Choose Your Fighter</h1>
+      <h1>Mortal Kommit</h1>
+      <h2>Choose Your Fighter</h2>
     </header>
   )
 }
@@ -152,30 +151,49 @@ const Title = () => {
       </footer>
     )
   }
-
-const Container = () => {
-  return(
-    <div  className='container'> 
-        <Title />
-        <Form />
-        <CardList/>
-        <div className='player-container'>
-          <PlayerOne/>
-          <PlayerTwo/>
-        </div>
-        <Footer/>
-    </div>
-  )
-}
       
-
+  function changeSize (e){
+    e.target.style.color = 'red';
+    console.log('On mouse Over!!!')
+  }
 
 
 class App extends React.Component {
 
+  state = {
+    profiles: testData, playerOne: '', playerTwo: '',
+  };
+
+  addNewProfile = (profileData) => {
+
+        if (this.state.profiles.length >= 10){
+          this.state.profiles.pop();
+        }
+
+        this.setState(prevState => ({
+          // profiles: [profileData, ...prevState.profiles]
+          profiles: [...prevState.profiles, profileData]
+        }))
+        // this.state.profiles.pop();
+      };
+
+        
+        
+        
+
+
   render(){
   return (
-    <Container/>
+    <div  className='container'> 
+        <Title />
+        <Form onSubmit={this.addNewProfile}/>
+        <CardList profiles={this.state.profiles}/>
+        <div className='player-container'>
+          <PlayerOne profile="/img/SubZero.png"/>
+          <PlayerTwo profile="/img/Scorpion.png"/>
+        </div>
+        <Footer />
+    </div>
   );
 }
 }
