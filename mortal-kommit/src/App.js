@@ -87,35 +87,84 @@ const sliceDataRow2 = (props) => {
                 placeholder="GitHub username" 
                 required 
               />
-              <button>Add card</button>
+              <button>Add fighter</button>
             </form>
           );
         }
+        
       }
 
 const CardList = (props) => (
   <>
   <div className='row-wrapper-1'>
-    {sliceDataRow1(props.profiles).map(profile => <Card {...profile}/>)}
+    {sliceDataRow1(props.profiles).map(profile => <Card key={profile.name}{...profile}/>)}
     </div>  
   <div className='row-wrapper-2'>
-    {sliceDataRow2(props.profiles).map(profile => <Card {...profile}/>)}
+    {sliceDataRow2(props.profiles).map(profile => <Card key={profile.name}{...profile}/>)}
   </div>
   </>
 );
 
-const PlayerOne = (props) =>(
-    <div>
-      <img src={props.profile}></img>
-    </div>
-);
+//move this into highest component?
+const onClickFighter = (status, set) => {
+  if (status == ('playerOne' || 'playerTwo')){
+    set('noStatus');
+  }
+  else{
+    set('playerOne');
+  }
+
+}
+
+//Get rid of globals?
+const playerStatus = {
+  playerOne: "3px solid red",
+  playerTwo: "3px solid green",
+  noStatus: "",
+};
+
+// first player clicked becomes p1; second player become p2
+// after two players are selected get and compare commits
+// you can click to deselect an already selected player
+
+//check to see if image has p1/p2 status
+//if status => deselect
+
+//I want to check if the element has a state of p1
+  // if it doesn't => apply p1 if it does => remove p1
+  // if p1 exists 
+const PlayerOne = (props) =>{
+
+  const [status, setStatus] = useState('noStatus');
+  // console.log('This', status[p1])
+    return(<div>
+      {/* <img src={props.profile}></img> */}
+      <img 
+      // onClick={() => console.log(props.profile[0].name)} 
+      // onClick={() => setPlayerOne({border:"3px solid red"})} 
+      onClick={() => onClickFighter(status, setStatus)} 
+      // src={playerOne.avatar_url}
+      src={"/img/Johnny-Cage.png" }
+      style={{border: playerStatus[status]}}
+      >
+
+      </img>
+    </div>)
+};
 
 const PlayerTwo = (props) =>(
   <div>
-    <img src={props.profile}></img>
+    <img src={props.profile} ></img>
   </div>
 );
 
+function checkImg(url){
+
+  if(url.avatar_url !== 'https://avatars.githubusercontent.com/u/66805711?v=4'){
+    return (url.avatar_url);
+  }
+  return(testData[Math.floor(Math.random() * 8)].avatar_url);
+};
 
 
 class Card extends React.Component {
@@ -124,7 +173,8 @@ class Card extends React.Component {
     const profile = this.props;
     return (
     <div className='github-profile'>
-        <img src={profile.avatar_url}/>
+        {/* <img src={checkImg(profile)} /> */}
+        <img src={profile.avatar_url} onClick={() => console.log(profile.name)}/>
         <div className='info'>
           <div className='name'></div>
           <div className='company'></div>
@@ -152,10 +202,7 @@ const Title = () => {
     )
   }
       
-  function changeSize (e){
-    e.target.style.color = 'red';
-    console.log('On mouse Over!!!')
-  }
+
 
 
 class App extends React.Component {
@@ -163,6 +210,8 @@ class App extends React.Component {
   state = {
     profiles: testData, playerOne: '', playerTwo: '',
   };
+
+
 
   addNewProfile = (profileData) => {
 
@@ -189,7 +238,7 @@ class App extends React.Component {
         <Form onSubmit={this.addNewProfile}/>
         <CardList profiles={this.state.profiles}/>
         <div className='player-container'>
-          <PlayerOne profile="/img/SubZero.png"/>
+          <PlayerOne profile={this.state.profiles}/>
           <PlayerTwo profile="/img/Scorpion.png"/>
         </div>
         <Footer />

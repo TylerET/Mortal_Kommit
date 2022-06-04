@@ -3,12 +3,17 @@
 
 * {
   box-sizing: border-box;
+
 }
 
 img {
   width: 60px;
   height: 75px;
 }
+
+
+
+
 
 .github-profile {
   border: 1px solid rgb(80, 80, 82);
@@ -17,8 +22,12 @@ img {
   
 }
 
-h1, h2, p{
+h1, h2, p, button, input{
   font-family: 'Press Start 2P', cursive;
+}
+
+button, input {
+  font-size: .4rem;
 }
 
 h2 {
@@ -43,12 +52,13 @@ p {
 }
 
 .container {
+  text-align: center;
   background-image: url('/public/img/MK-background.png');
   background-repeat: repeat;
   margin: 0;
   width: 100vw;
   height: 100vh;
-  border: 2px solid red;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -59,9 +69,10 @@ p {
   grid-template: 75px / 60px 60px 60px 60px 60px;
   /* border: 1px solid green; */
 }
+
 .row-wrapper-2 {
   display: grid;
-  grid-template: 60px / 60px 60px 60px;
+  grid-template: 75px / 60px 60px 60px;
   grid-auto-flow: column;
   /* border: 2px solid green; */
 }
