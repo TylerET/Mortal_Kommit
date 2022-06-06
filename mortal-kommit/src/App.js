@@ -22,22 +22,13 @@ const sliceDataRow2 = (props) => {
   return props.slice(5);
 }
 
+function checkImg(url){
 
-
-//Card
-//Card List
-//Form
-
-// first player clicked becomes p1; second player become p2
-// after two players are selected get and compare commits
-// you can click to deselect an already selected player
-
-//check to see if image has p1/p2 status
-//if status => deselect
-
-//I want to check if the element has a state of p1
-  // if it doesn't => apply p1 if it does => remove p1
-  // if p1 exists 
+  if(url.avatar_url !== 'https://avatars.githubusercontent.com/u/66805711?v=4'){
+    return (url.avatar_url);
+  }
+  return(testData[Math.floor(Math.random() * 8)].avatar_url);
+};
 
 //https://api.github.com/users/{userName}/repos
       //request repos from user and then iterate thru repos to check commits on each
@@ -50,96 +41,116 @@ const sliceDataRow2 = (props) => {
 
       //check for author === username
 
-//If no profile picture = choose random MK
+const activePlayers = {p1: null, p2: null};
 
-      class Form extends React.Component {
-        state = { userName: ''};
-        handleSubmit = async (event) => {
-          event.preventDefault();
-          //overrides native refresh during a submit
-          // const resp = await axios.get(`https://api.github.com/users/${this.state.userName}/repos`);
-          const resp = await axios.get(`https://api.github.com/users/${this.state.userName}`);
-          this.props.onSubmit(resp.data);
-          
-          // console.log(resp.data);
+class App extends React.Component {
 
-          // const repoNames = [];
-          //     for (let i = 0; i < resp.data.length; i++){
-          //       let repoName = resp.data[i].name;
-          //       if(repoName !== 'LandingPage'){
-          //     repoNames.push(repoName);}
-          //   }
-          // console.table(repoNames);
+  constructor(props){
+    super(props);
+    this.state = {
+      profiles: testData,
+      // activePlayers : {p1: null, p2: null},
+  };
+  }
 
-          var accum = 0;
 
-        //   for (var name in repoNames){
-        //     const resp2 = await axios.get(`https://api.github.com/repos/${this.state.userName}/${repoNames[name]}/commits`);
-        //     accum += resp2.data.length;
 
-        //     // console.log(resp2.data);
-        //     console.log(accum);
-        //     // console.log(repoNames[name]);
-        //   }
-        //   this.setState({ userName: ''});
-        };
-        render() {
-          return (
-            <form onSubmit={this.handleSubmit}>
-              <input 
-                type="text" 
-                value={this.state.userName}
-                onChange={event => this.setState({ userName: event.target.value })}
-                placeholder="GitHub username" 
-                required 
-              />
-              <button>Add fighter</button>
-            </form>
-          );
+  addNewProfile = (profileData) => {
+
+        if (this.state.profiles.length >= 10){
+          this.state.profiles.pop();
         }
-        
-      }
+
+        this.setState(prevState => ({
+          // profiles: [profileData, ...prevState.profiles]
+          profiles: [...prevState.profiles, profileData]
+        }))
+        // this.state.profiles.pop();
+      };
+
+  render(){
+  return (    
+    <div  className='container'>
+        <Title />
+        <Form onSubmit={this.addNewProfile}/>
+        <CardList profiles={this.state.profiles} active={this.state.activePlayers}/>
+        <div className='player-container'>
+          <PlayerOne profile={activePlayers.p1}/>
+          <PlayerTwo profile={activePlayers.p2}/>
+        </div>
+        <Footer />
+    </div>
+  );
+}
+}
+
+const Title = () => {
+  return (
+    <header>
+      <h1>Mortal Kommit</h1>
+      <h2>Choose Your Fighter</h2>
+    </header>
+  )
+}
+
+class Form extends React.Component {
+state = { userName: ''};
+handleSubmit = async (event) => {
+  event.preventDefault();
+  //overrides native refresh during a submit
+  // const resp = await axios.get(`https://api.github.com/users/${this.state.userName}/repos`);
+  const resp = await axios.get(`https://api.github.com/users/${this.state.userName}`);
+  this.props.onSubmit(resp.data);
+  
+  // console.log(resp.data);
+
+  // const repoNames = [];
+  //     for (let i = 0; i < resp.data.length; i++){
+  //       let repoName = resp.data[i].name;
+  //       if(repoName !== 'LandingPage'){
+  //     repoNames.push(repoName);}
+  //   }
+  // console.table(repoNames);
+
+  var accum = 0;
+
+//   for (var name in repoNames){
+//     const resp2 = await axios.get(`https://api.github.com/repos/${this.state.userName}/${repoNames[name]}/commits`);
+//     accum += resp2.data.length;
+
+//     // console.log(resp2.data);
+//     console.log(accum);
+//     // console.log(repoNames[name]);
+//   }
+//   this.setState({ userName: ''});
+};
+render() {
+  return (
+    <form onSubmit={this.handleSubmit}>
+      <input 
+        type="text" 
+        value={this.state.userName}
+        onChange={event => this.setState({ userName: event.target.value })}
+        placeholder="GitHub username" 
+        required 
+      />
+      <button>Add fighter</button>
+    </form>
+  );
+}
+
+}
 
 const CardList = (props) => (
   <>
   <div className='row-wrapper-1'>
-    {sliceDataRow1(props.profiles).map(profile => <Card key={profile.name}{...profile}/>)}
+    {sliceDataRow1(props.profiles).map(profile => <Card key={profile.name}{...profile} active={props.active}/>)}
     </div>  
   <div className='row-wrapper-2'>
-    {sliceDataRow2(props.profiles).map(profile => <Card key={profile.name}{...profile}/>)}
+    {sliceDataRow2(props.profiles).map(profile => <Card key={profile.name}{...profile} active={props.active}/>)}
   </div>
   </>
 );
-
-// //move this into highest component?
-// const onClickFighter = (status, set) => {
-//   if (status == ('playerOne' || 'playerTwo')){
-//     set('noStatus');
-//   }
-//   else{
-//     set('playerOne');
-//   }
-
-// }
-
-
-
-
-const PlayerTwo = (props) =>(
-  <div>
-    <img src={props.profile} ></img>
-  </div>
-);
-
-function checkImg(url){
-
-  if(url.avatar_url !== 'https://avatars.githubusercontent.com/u/66805711?v=4'){
-    return (url.avatar_url);
-  }
-  return(testData[Math.floor(Math.random() * 8)].avatar_url);
-};
-
-const activePlayers = {p1: null, p2: null};
 
 class Card extends React.Component {
   constructor(props){
@@ -149,6 +160,8 @@ class Card extends React.Component {
     };  
     this.onClickFighter = this.onClickFighter.bind(this);
   }
+
+  // activePlayers = props.state.active;
 
   
 
@@ -166,15 +179,14 @@ class Card extends React.Component {
       activePlayers.p2 = null;
     }
     else {
-      console.log('else', 'This is else-ing')
       if (activePlayers.p1 == null)
       {
         this.setState({playerState: 'playerOne'});
-        activePlayers.p1 = this.props.name;
+        activePlayers.p1 = this.props;
       } else if(activePlayers.p2 == null)
       {
           this.setState({playerState: 'playerTwo'});
-          activePlayers.p2 = this.props.name;
+          activePlayers.p2 = this.props;
       } else {
 
       }
@@ -204,25 +216,6 @@ class Card extends React.Component {
   }
 }
 
-
-const Title = () => {
-  return (
-    <header>
-      <h1>Mortal Kommit</h1>
-      <h2>Choose Your Fighter</h2>
-    </header>
-  )
-}
-  
-const Footer = () => {
-  return (
-    <footer>
-      <p>Credits: 0</p>
-    </footer>
-  )
-}
-      
-
 const PlayerOne = (props) =>{
   // console.log('PlayerOne', props.profile);
   // console.log('Log2', props.profile.avatar_url);
@@ -234,74 +227,20 @@ const PlayerOne = (props) =>{
       <Card {...props.profile}/>
     </div>);
   }
-    
-    
-    // return(<div>
-    //   {/* <img src={props.profile}></img> */}
-    //   <img 
-    //   // onClick={() => console.log(props.profile[0].name)} 
-    //   // onClick={() => setPlayerOne({border:"3px solid red"})} 
-    //   // onClick={() => onClickFighter(status, setStatus)} 
-    //   // src={playerOne.avatar_url}
-    //   src={"/img/Johnny-Cage.png" }
-    //   style={{border: playerStatus[status]}}
-    //   >
-
-    //   </img>
-    // </div>)
 };
 
-class App extends React.Component {
+const PlayerTwo = (props) =>(
+  <div>
+    <img src={props.profile} ></img>
+  </div>
+);
 
-  constructor(props){
-    super(props);
-    this.state = {profiles: testData,
-    // playerState: 'noStatus'
-  };
-    // this.onClickFighter = this.onClickFighter.bind(this);
-  }
-
-  // onClickFighter = () => {
-  //   // console.log('onClickFighter', this.state.playerState);
-  //   if (this.state.playerState === ('playerOne' || 'playerTwo')){
-  //     this.setState({playerState: 'noStatus'});
-  //   }
-  //   else{
-  //     this.setState({playerState: 'playerOne'});
-  //   }
-  // }
-
-  // state = {
-  //   profiles: testData, playerOne: 'PlayerOne', playerTwo: '',
-  // };
-
-  addNewProfile = (profileData) => {
-
-        if (this.state.profiles.length >= 10){
-          this.state.profiles.pop();
-        }
-
-        this.setState(prevState => ({
-          // profiles: [profileData, ...prevState.profiles]
-          profiles: [...prevState.profiles, profileData]
-        }))
-        // this.state.profiles.pop();
-      };
-
-  render(){
-  return (    
-    <div  className='container'>
-        <Title />
-        <Form onSubmit={this.addNewProfile}/>
-        <CardList profiles={this.state.profiles}/>
-        <div className='player-container'>
-          <PlayerOne profile={this.state.profiles[0]} playerState={this.state.playerState}/>
-          <PlayerTwo profile="/img/Scorpion.png"/>
-        </div>
-        <Footer />
-    </div>
-  );
-}
+const Footer = () => {
+  return (
+    <footer>
+      <p>Credits: 0</p>
+    </footer>
+  )
 }
 
 export default App;
