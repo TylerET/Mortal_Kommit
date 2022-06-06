@@ -14,11 +14,6 @@ const testData = [
   {name: "Scorpion", avatar_url: "/img/Scorpion.png"},
 ];
 
-// const sliceDataRow1 = testData.slice(0,5);
-// const sliceDataRow2 = testData.slice(5);
-// console.table(sliceDataRow1);
-// console.table(sliceDataRow2);
-
 const sliceDataRow1 = (props) => {
   return props.slice(0,5);
 }
@@ -32,6 +27,17 @@ const sliceDataRow2 = (props) => {
 //Card
 //Card List
 //Form
+
+// first player clicked becomes p1; second player become p2
+// after two players are selected get and compare commits
+// you can click to deselect an already selected player
+
+//check to see if image has p1/p2 status
+//if status => deselect
+
+//I want to check if the element has a state of p1
+  // if it doesn't => apply p1 if it does => remove p1
+  // if p1 exists 
 
 //https://api.github.com/users/{userName}/repos
       //request repos from user and then iterate thru repos to check commits on each
@@ -105,52 +111,19 @@ const CardList = (props) => (
   </>
 );
 
-//move this into highest component?
-const onClickFighter = (status, set) => {
-  if (status == ('playerOne' || 'playerTwo')){
-    set('noStatus');
-  }
-  else{
-    set('playerOne');
-  }
+// //move this into highest component?
+// const onClickFighter = (status, set) => {
+//   if (status == ('playerOne' || 'playerTwo')){
+//     set('noStatus');
+//   }
+//   else{
+//     set('playerOne');
+//   }
 
-}
+// }
 
-//Get rid of globals?
-const playerStatus = {
-  playerOne: "3px solid red",
-  playerTwo: "3px solid green",
-  noStatus: "",
-};
 
-// first player clicked becomes p1; second player become p2
-// after two players are selected get and compare commits
-// you can click to deselect an already selected player
 
-//check to see if image has p1/p2 status
-//if status => deselect
-
-//I want to check if the element has a state of p1
-  // if it doesn't => apply p1 if it does => remove p1
-  // if p1 exists 
-const PlayerOne = (props) =>{
-
-  const [status, setStatus] = useState('noStatus');
-  // console.log('This', status[p1])
-    return(<div>
-      {/* <img src={props.profile}></img> */}
-      <img 
-      // onClick={() => console.log(props.profile[0].name)} 
-      // onClick={() => setPlayerOne({border:"3px solid red"})} 
-      onClick={() => onClickFighter(status, setStatus)} 
-      // src={playerOne.avatar_url}
-      src={"/img/Johnny-Cage.png" }
-      style={{border: playerStatus[status]}}
-      >
-
-      </img>
-    </div>)
-};
 
 const PlayerTwo = (props) =>(
   <div>
@@ -166,15 +139,62 @@ function checkImg(url){
   return(testData[Math.floor(Math.random() * 8)].avatar_url);
 };
 
+const activePlayers = {p1: null, p2: null};
 
 class Card extends React.Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      playerState: 'noStatus',
+    };  
+    this.onClickFighter = this.onClickFighter.bind(this);
+  }
+
+  
+
+
+  onClickFighter = () => {
+    // console.log('onClickFighter', );
+    // console.log(this.state.playerState);
+    // console.log((this.state.playerState === 'playerOne'));
+    if (this.state.playerState === 'playerOne'){
+      this.setState({playerState: 'noStatus'});
+      activePlayers.p1 = null;
+    }
+    else if (this.state.playerState === 'playerTwo'){
+      this.setState({playerState: 'noStatus'});
+      activePlayers.p2 = null;
+    }
+    else {
+      console.log('else', 'This is else-ing')
+      if (activePlayers.p1 == null)
+      {
+        this.setState({playerState: 'playerOne'});
+        activePlayers.p1 = this.props.name;
+      } else if(activePlayers.p2 == null)
+      {
+          this.setState({playerState: 'playerTwo'});
+          activePlayers.p2 = this.props.name;
+      } else {
+
+      }
+      console.table(activePlayers);
+    }
+  }
+
+  stateStyle = {
+    playerOne: "3px solid red",
+    playerTwo: "3px solid LawnGreen",
+    noStatus: "",
+  };
+
 
   render () {
     const profile = this.props;
     return (
-    <div className='github-profile'>
+    <div className='github-profile' onClick={this.onClickFighter} style={{border: this.stateStyle[this.state.playerState]}}>
         {/* <img src={checkImg(profile)} /> */}
-        <img src={profile.avatar_url} onClick={() => console.log(profile.name)}/>
+        <img src={profile.avatar_url}/>
         <div className='info'>
           <div className='name'></div>
           <div className='company'></div>
@@ -194,24 +214,66 @@ const Title = () => {
   )
 }
   
-  const Footer = () => {
-    return (
-      <footer>
-        <p>Credits: 0</p>
-      </footer>
-    )
-  }
+const Footer = () => {
+  return (
+    <footer>
+      <p>Credits: 0</p>
+    </footer>
+  )
+}
       
 
+const PlayerOne = (props) =>{
+  // console.log('PlayerOne', props.profile);
+  // console.log('Log2', props.profile.avatar_url);
+  if (props.playerState == 'playerOne'){
+    return(<div className='activePlayer'></div>);
+  } else {
+    return(
+    <div className="activePlayer">
+      <Card {...props.profile}/>
+    </div>);
+  }
+    
+    
+    // return(<div>
+    //   {/* <img src={props.profile}></img> */}
+    //   <img 
+    //   // onClick={() => console.log(props.profile[0].name)} 
+    //   // onClick={() => setPlayerOne({border:"3px solid red"})} 
+    //   // onClick={() => onClickFighter(status, setStatus)} 
+    //   // src={playerOne.avatar_url}
+    //   src={"/img/Johnny-Cage.png" }
+    //   style={{border: playerStatus[status]}}
+    //   >
 
+    //   </img>
+    // </div>)
+};
 
 class App extends React.Component {
 
-  state = {
-    profiles: testData, playerOne: '', playerTwo: '',
+  constructor(props){
+    super(props);
+    this.state = {profiles: testData,
+    // playerState: 'noStatus'
   };
+    // this.onClickFighter = this.onClickFighter.bind(this);
+  }
 
+  // onClickFighter = () => {
+  //   // console.log('onClickFighter', this.state.playerState);
+  //   if (this.state.playerState === ('playerOne' || 'playerTwo')){
+  //     this.setState({playerState: 'noStatus'});
+  //   }
+  //   else{
+  //     this.setState({playerState: 'playerOne'});
+  //   }
+  // }
 
+  // state = {
+  //   profiles: testData, playerOne: 'PlayerOne', playerTwo: '',
+  // };
 
   addNewProfile = (profileData) => {
 
@@ -226,19 +288,14 @@ class App extends React.Component {
         // this.state.profiles.pop();
       };
 
-        
-        
-        
-
-
   render(){
-  return (
-    <div  className='container'> 
+  return (    
+    <div  className='container'>
         <Title />
         <Form onSubmit={this.addNewProfile}/>
         <CardList profiles={this.state.profiles}/>
         <div className='player-container'>
-          <PlayerOne profile={this.state.profiles}/>
+          <PlayerOne profile={this.state.profiles[0]} playerState={this.state.playerState}/>
           <PlayerTwo profile="/img/Scorpion.png"/>
         </div>
         <Footer />
